@@ -1,0 +1,658 @@
+/* ========== 小猫钓鱼 · 卡通童趣主题 ========== */
+:root {
+  --apricot: #e8a87c;
+  --apricot-deep: #d4946a;
+  --apricot-mist: #f5d4c2;
+  --apricot-bg: #fff5ee;
+  --aqua: #85cdca;
+  --aqua-deep: #5fb8b4;
+  --aqua-mist: #c5ebe9;
+  --aqua-dark: #4a9e9a;
+  --charcoal: #4a4a48;
+  --charcoal-soft: #6b6b68;
+  --highlight: #f9dc5c;
+  --highlight-deep: #e8c94a;
+  --white: #fffcf8;
+  --shadow-cartoon: 4px 6px 0 var(--charcoal);
+  --shadow-soft: 0 8px 24px rgba(74, 74, 72, 0.12);
+  --radius-lg: clamp(18px, 3vw, 28px);
+  --radius-md: clamp(12px, 2vw, 18px);
+  --font-display: "ZCOOL KuaiLe", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-ui: "Nunito", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --fish-safe-top: clamp(110px, 16vh, 200px);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: clamp(14px, 1.1vw, 18px);
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-ui);
+  color: var(--charcoal);
+  background: url("ui图标/背景图.png") center center / cover no-repeat fixed;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 252, 248, 0.12) 0%,
+    rgba(74, 74, 72, 0.08) 100%
+  );
+  z-index: 0;
+}
+
+/* ========== 主面板：随视口放大，不再按固定 1440 稿 ========== */
+.game-container {
+  position: relative;
+  z-index: 1;
+  width: min(100vw - 1.25rem, 1920px);
+  min-height: min(92vh, 1600px);
+  margin: clamp(6px, 1.2vh, 20px) auto;
+  padding: clamp(10px, 1.4vw, 22px);
+  background: rgba(255, 252, 248, 0.72);
+  backdrop-filter: blur(8px);
+  border-radius: var(--radius-lg);
+  border: 4px solid var(--charcoal);
+  box-shadow: var(--shadow-cartoon), var(--shadow-soft);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ========== 池塘整体（含 UI + 水域） ========== */
+.pond-stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: min(86vh, 1500px);
+  --pond-ui-h: 0px; /* 由 JS 动态设置：pond-ui 的高度，用于让小猫跨过 UI/水域交界 */
+  border-radius: var(--radius-md);
+  border: 4px solid var(--charcoal);
+  background: linear-gradient(
+      180deg,
+      rgba(197, 235, 233, 0.55) 0%,
+      rgba(133, 205, 202, 0.75) 45%,
+      rgba(95, 184, 180, 0.88) 100%
+    ),
+    url("ui图标/背景图.png") center center / cover no-repeat;
+  box-shadow: inset 0 -20px 40px rgba(74, 158, 154, 0.35), 3px 5px 0 var(--charcoal-soft);
+  overflow: hidden;
+}
+
+.pond-stage::before {
+  content: "";
+  position: absolute;
+  top: 8%;
+  left: 5%;
+  right: 5%;
+  height: 18%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.45),
+    transparent
+  );
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.pond-stage::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  background-image: radial-gradient(
+      circle at 15% 70%,
+      rgba(255, 255, 255, 0.35) 0,
+      transparent 8px
+    ),
+    radial-gradient(circle at 78% 45%, rgba(255, 255, 255, 0.25) 0, transparent 6px),
+    radial-gradient(circle at 42% 88%, rgba(255, 255, 255, 0.2) 0, transparent 5px);
+}
+
+/* 上半：分数 | 鱼饵（加宽）| 状态与按钮 — 全部在池塘内 */
+.pond-ui {
+  position: relative;
+  z-index: 10; /* 确保 UI 永远可点击 */
+  display: grid;
+  grid-template-columns: minmax(160px, 1fr) minmax(260px, 2.8fr) minmax(170px, 1.1fr);
+  gap: clamp(12px, 2vw, 24px);
+  padding: clamp(14px, 2.2vw, 1.6rem);
+  align-items: stretch; /* 让三个列在同一高度对齐 */
+  background: rgba(255, 252, 248, 0.42);
+  backdrop-filter: blur(6px);
+  border-bottom: 3px dashed rgba(74, 74, 72, 0.22);
+}
+
+.score-board {
+  padding: clamp(10px, 1.5vw, 14px);
+  background: linear-gradient(135deg, var(--highlight) 0%, var(--apricot-mist) 100%);
+  border-radius: var(--radius-md);
+  border: 3px solid var(--charcoal);
+  box-shadow: 3px 4px 0 var(--charcoal-soft);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px 8px;
+}
+
+.score-item {
+  font-size: clamp(0.75rem, 1.65vw, 0.9rem);
+  font-weight: 700;
+  color: var(--charcoal);
+  padding: 4px 0;
+  border-bottom: 2px dashed rgba(74, 74, 72, 0.18);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 6px;
+}
+
+.score-item:nth-last-child(-n + 2) {
+  border-bottom: none;
+}
+
+.score-item span {
+  font-variant-numeric: tabular-nums;
+  color: var(--aqua-dark);
+  background: var(--white);
+  padding: 2px 8px;
+  border-radius: 8px;
+  border: 2px solid var(--charcoal);
+}
+
+.bait-bar {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(8px, 1.1vw, 12px);
+  min-width: 0;
+  padding: clamp(10px, 1.2vw, 14px);
+  background: rgba(197, 235, 233, 0.55);
+  border-radius: var(--radius-md);
+  border: 3px solid var(--charcoal);
+  box-shadow: 3px 4px 0 rgba(74, 74, 72, 0.1);
+  height: 100%;
+}
+
+.bait-bar-label {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+  color: var(--charcoal);
+}
+
+.mode-dropdown {
+  position: relative;
+  width: 100%;
+}
+
+.mode-dropdown-btn {
+  width: 100%;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 3px solid var(--charcoal);
+  background: rgba(255, 252, 248, 0.85);
+  box-shadow: 2px 3px 0 var(--charcoal);
+  color: var(--charcoal);
+  font-family: var(--font-ui);
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.mode-dropdown-btn:focus {
+  outline: none;
+  box-shadow: 2px 3px 0 var(--charcoal), 0 0 0 3px rgba(249, 220, 92, 0.35);
+}
+
+.mode-dropdown-btn::after {
+  content: '▾';
+  float: right;
+  color: var(--aqua-deep);
+  font-weight: 900;
+}
+
+.mode-dropdown-menu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(100% + 6px);
+  background: rgba(255, 252, 248, 0.96);
+  border: 3px solid var(--charcoal);
+  border-radius: 14px;
+  box-shadow: 3px 4px 0 var(--charcoal-soft);
+  overflow: auto;
+  max-height: 260px;
+  padding: 8px;
+  display: none;
+  z-index: 50;
+  box-sizing: border-box;
+}
+
+.mode-dropdown.open .mode-dropdown-menu {
+  display: block;
+}
+
+.mode-option {
+  width: 100%;
+  display: block;
+  text-align: left;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 2px dashed rgba(74, 74, 72, 0.18);
+  background: rgba(197, 235, 233, 0.30);
+  color: var(--charcoal);
+  font-family: var(--font-ui);
+  font-weight: 900;
+  cursor: pointer;
+  margin-bottom: 6px;
+}
+
+.mode-option:last-child {
+  margin-bottom: 0;
+}
+
+.mode-option:hover {
+  background: rgba(249, 220, 92, 0.35);
+}
+
+.bait-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.bait-btn {
+  flex: 1;
+  min-width: min(160px, 100%);
+  padding: clamp(12px, 1.8vw, 16px) clamp(16px, 2.5vw, 24px);
+  font-family: var(--font-ui);
+  font-size: clamp(0.88rem, 1.9vw, 1.05rem);
+  font-weight: 700;
+  cursor: pointer;
+  border-radius: 999px;
+  border: 3px solid var(--charcoal);
+  background: var(--white);
+  color: var(--charcoal);
+  box-shadow: 2px 3px 0 var(--charcoal);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.bait-btn:hover {
+  background: var(--apricot-mist);
+}
+
+.bait-btn.active {
+  background: var(--highlight);
+}
+
+.bait-btn:active {
+  transform: translate(2px, 2px);
+  box-shadow: none;
+}
+
+.pond-ui-right {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+.status {
+  margin: 0;
+  padding: 8px 12px;
+  background: var(--white);
+  border-radius: var(--radius-md);
+  border: 2px dashed var(--aqua-deep);
+}
+
+.status p {
+  margin: 0;
+  font-weight: 700;
+  font-size: clamp(0.82rem, 1.8vw, 0.95rem);
+}
+
+#status {
+  font-weight: 800;
+  color: var(--aqua-dark);
+}
+
+#status.status-lucky {
+  color: var(--apricot-deep);
+}
+
+.game-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.game-btn {
+  width: 100%;
+  padding: clamp(12px, 1.8vw, 14px) clamp(14px, 2vw, 18px);
+  font-family: var(--font-display);
+  font-size: clamp(0.92rem, 2vw, 1.08rem);
+  cursor: pointer;
+  border-radius: 14px;
+  border: 3px solid var(--charcoal);
+  background: linear-gradient(180deg, var(--apricot) 0%, var(--apricot-deep) 100%);
+  color: var(--charcoal);
+  box-shadow: 3px 4px 0 var(--charcoal);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.game-btn:hover:not(:disabled) {
+  filter: brightness(1.05);
+}
+
+.game-btn:active:not(:disabled) {
+  transform: translate(2px, 3px);
+  box-shadow: 1px 1px 0 var(--charcoal);
+}
+
+.game-btn:disabled {
+  opacity: 0.75;
+  cursor: not-allowed;
+  background: linear-gradient(180deg, var(--apricot-mist) 0%, var(--apricot) 100%);
+}
+
+#reset-btn {
+  background: linear-gradient(180deg, var(--aqua-mist) 0%, var(--aqua) 100%);
+}
+
+#time.time-caution {
+  color: var(--apricot-deep) !important;
+}
+
+#time.time-ok {
+  color: var(--aqua-dark) !important;
+}
+
+#time.warning {
+  color: #c45c4a !important;
+  animation: time-pulse 0.6s ease-in-out infinite;
+}
+
+@keyframes time-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+/* 下半：小猫叠在交界处 + 仅下方水域出鱼 */
+.pond-water {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: min(52vh, 900px);
+  z-index: 2;
+}
+
+.cat-hero {
+  position: absolute;
+  left: 50%;
+  /* 对齐：小猫中心落在 pond-ui 和水域的交界处 */
+  top: var(--pond-ui-h);
+  transform: translate(-50%, -50%);
+  z-index: 30; /* 放到 pond-ui 上面 */
+  /* 跟随分辨率自适应：2560 宽时仍接近旧版效果（约 380px 上限） */
+  width: clamp(160px, 22vw, 380px);
+  max-width: min(92%, 380px);
+  line-height: 0;
+  filter: drop-shadow(4px 6px 0 rgba(74, 74, 72, 0.2));
+  animation: cat-fishing-bob 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.cat-fishing-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+}
+
+@keyframes cat-fishing-bob {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) translateY(0) rotate(-1deg);
+  }
+  50% {
+    transform: translate(-50%, -50%) translateY(-5px) rotate(1deg);
+  }
+}
+
+.fish-zone {
+  position: relative;
+  flex: 1;
+  min-height: min(44vh, 640px);
+  z-index: 2;
+}
+
+.items-container {
+  position: absolute;
+  left: clamp(6px, 1vw, 14px);
+  right: clamp(6px, 1vw, 14px);
+  bottom: clamp(6px, 1vw, 14px);
+  top: var(--fish-safe-top);
+  z-index: 3;
+}
+
+/* ========== 池塘内物品 ========== */
+.item {
+  position: absolute;
+  width: clamp(96px, 22vw, 128px);
+  height: clamp(96px, 22vw, 128px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  user-select: none;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  animation: item-float 2.2s ease-in-out infinite;
+  transition: transform 0.2s ease, filter 0.2s ease;
+  z-index: 3;
+  padding: 0;
+}
+
+.item-sprite {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  pointer-events: none;
+}
+
+.item-emoji {
+  font-size: clamp(3rem, 9vw, 4rem);
+  line-height: 1;
+  pointer-events: none;
+}
+
+@keyframes item-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ========== 消息气泡 ========== */
+.message-container {
+  position: fixed;
+  top: clamp(10px, 2.5vw, 20px);
+  bottom: auto;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 4px;
+  width: min(92vw, 340px);
+  pointer-events: none;
+}
+
+.message {
+  width: 100%;
+  padding: 5px 10px;
+  font-family: var(--font-display);
+  font-size: clamp(0.68rem, 1.65vw, 0.8rem);
+  line-height: 1.35;
+  text-align: center;
+  border-radius: 10px;
+  border: 2px solid var(--charcoal);
+  box-shadow: 2px 2px 0 var(--charcoal);
+  animation: message-pop 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+  flex-shrink: 0;
+}
+
+@keyframes message-pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.message.caught {
+  background: linear-gradient(135deg, var(--aqua-mist), var(--white));
+  color: var(--charcoal);
+}
+
+.message.error {
+  background: linear-gradient(135deg, var(--apricot-mist), var(--white));
+  color: var(--charcoal);
+}
+
+.message.combo {
+  background: linear-gradient(135deg, var(--highlight), var(--apricot-mist));
+  color: var(--charcoal);
+}
+
+.message.lucky {
+  background: linear-gradient(135deg, var(--highlight) 0%, var(--aqua) 100%);
+  color: var(--charcoal);
+}
+
+@keyframes lucky-time-flash {
+  0% {
+    filter: brightness(1) saturate(1);
+    box-shadow: inset 0 -20px 40px rgba(74, 158, 154, 0.35), 3px 5px 0 var(--charcoal-soft);
+  }
+  100% {
+    filter: brightness(1.08) saturate(1.15);
+    box-shadow: inset 0 -20px 40px rgba(249, 220, 92, 0.45), 3px 5px 0 var(--charcoal-soft);
+  }
+}
+
+@keyframes full-screen-flash {
+  0% {
+    opacity: 0.45;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.full-screen-effect {
+  animation: full-screen-flash 1s ease-out forwards !important;
+}
+
+/* ========== 响应式：窄屏纵向堆叠 ========== */
+@media (max-width: 1000px) {
+  .pond-ui {
+    grid-template-columns: 1fr;
+  }
+
+  .score-board {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .bait-buttons {
+    flex-direction: column;
+  }
+
+  .pond-ui-right {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .pond-ui-right .status {
+    flex: 1 1 200px;
+  }
+
+  .pond-ui-right .game-buttons {
+    flex: 2 1 280px;
+    flex-direction: row;
+  }
+
+  .pond-ui-right .game-btn {
+    flex: 1;
+  }
+}
+
+@media (max-width: 600px) {
+  .game-container {
+    width: calc(100vw - 10px);
+    min-height: auto;
+  }
+
+  .pond-stage {
+    min-height: min(88vh, 1400px);
+  }
+
+  .cat-hero {
+    width: clamp(140px, 62vw, 280px);
+  }
+
+  :root {
+    --fish-safe-top: clamp(96px, 22vw, 150px);
+  }
+}
+
+@media (max-width: 380px) {
+  .game-container {
+    padding: 8px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
