@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>猫咪钓鱼乐</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <div class="pond-stage" id="pond">
+            <div class="pond-ui">
+                <div class="score-board">
+                    <div class="score-item">得分：<span id="score">0</span></div>
+                    <div class="score-item">连击：<span id="combo">0</span></div>
+                    <div class="score-item">时长：<span id="time">0:00</span></div>
+                    <div class="score-item">最高分：<span id="high-score">0</span></div>
+                </div>
+
+                <div class="bait-bar">
+                    <p class="bait-bar-label">模式选择</p>
+                    <div class="mode-dropdown" id="mode-dropdown">
+                        <button type="button" id="mode-button" class="mode-dropdown-btn" aria-haspopup="listbox" aria-expanded="false">
+                            入门级：小猫摸鱼
+                        </button>
+                        <div id="mode-menu" class="mode-dropdown-menu" role="listbox" aria-labelledby="mode-button">
+                            <button type="button" class="mode-option" data-mode="catfish">入门级：小猫摸鱼</button>
+                            <button type="button" class="mode-option" data-mode="river">简单级：溪边垂钓</button>
+                            <button type="button" class="mode-option" data-mode="patient">进阶级：静候鱼来</button>
+                            <button type="button" class="mode-option" data-mode="deep">困难级：深水追鱼</button>
+                            <button type="button" class="mode-option" data-mode="master">大师级：浪里钓猫</button>
+                            <button type="button" class="mode-option" data-mode="hellwater">炼狱级：惊涛垂钓</button>
+                            <button type="button" class="mode-option" data-mode="hell">地狱级：深渊钓魂</button>
+                            <button type="button" class="mode-option" data-mode="infinite">无限模式</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pond-ui-right">
+                    <div class="status">
+                        <p>状态：<span id="status">正常</span></p>
+                        <p>模式：<span id="mode-name">小猫摸鱼</span></p>
+                    </div>
+                    <div class="game-buttons">
+                        <button type="button" id="start-btn" class="game-btn">开始钓鱼</button>
+                        <button type="button" id="reset-btn" class="game-btn">重置游戏</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="cat-hero" aria-hidden="true">
+                <img
+                    class="cat-fishing-img"
+                    src="ui图标/小猫钓鱼.png"
+                    width="320"
+                    height="320"
+                    alt=""
+                    draggable="false"
+                />
+            </div>
+
+            <div class="pond-water">
+                <div class="fish-zone" id="fish-zone">
+                    <div class="items-container" id="items-container"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="message-container" id="message-container"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
